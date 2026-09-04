@@ -243,7 +243,7 @@ servicio_datalab@imedea.uib-csic.es with the path and roughly when the file was 
 ## Where to go next
 
 - **Documentation:** <https://imedea-datalab.github.io/tramuntana-docs/>
-- **These slides:** [Canva](https://www.canva.com/design/DAHSopfTDkc/IlSxTvrYS7Stkw78Sa_Qxw/view)
+- **These slides:** [Canva](https://www.canva.com/d/oG4tBEbgxVxoptp)
 - **The written version:** [Part 1 — What's new](01-whats-new.md)
 - **Questions:** servicio_datalab@imedea.uib-csic.es
 

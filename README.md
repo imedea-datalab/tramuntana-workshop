@@ -14,7 +14,7 @@ Everything you need for the Tramuntana 2.0 workshop, in one place:
 
 | | |
 |---|---|
-| 📊 **[Slides (Canva)](https://www.canva.com/design/DAHSopfTDkc/IlSxTvrYS7Stkw78Sa_Qxw/view)** | The presentation used in the morning session |
+| 📊 **[Slides (Canva)](https://www.canva.com/d/oG4tBEbgxVxoptp)** | The presentation used in the morning session |
 | 📖 **[Part 1 — What's new](01-whats-new.md)** | Written version of the slides, with all the detail that doesn't fit on a slide |
 | 🧪 **[Part 2 — Hands-on](02-hands-on.md)** | The exercises we run after the coffee break |
 | 📂 **[`exercises/`](exercises/)** | Ready-to-run job scripts for the practical part |

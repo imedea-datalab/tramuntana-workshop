@@ -1,6 +1,6 @@
 # Part 1 — What's new in Tramuntana 2.0
 
-The written version of the [morning slides](https://www.canva.com/design/DAHSopfTDkc/IlSxTvrYS7Stkw78Sa_Qxw/view).
+The written version of the [morning slides](https://www.canva.com/d/oG4tBEbgxVxoptp).
 Read it before the workshop, or use it afterwards as a reference.
 
 **Contents**
