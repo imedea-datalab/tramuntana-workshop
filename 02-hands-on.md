@@ -1,9 +1,10 @@
 # Part 2 — Hands-on
 
-Six exercises, 11:30–13:00. Everything you need is in [`exercises/`](exercises/).
+Nine short exercises, interleaved with the slides. After each new feature we stop and you try it,
+then we move on. Everything you need is in [`exercises/`](exercises/).
 
 Nothing here assumes you have used SLURM before. The first exercise happens entirely in a browser.
-If you get stuck at any point, put a hand up — falling behind on exercise 2 makes exercise 3
+If you get stuck at any point, put a hand up — falling behind on exercise 4 makes exercise 5
 meaningless, and we would rather stop than leave you behind.
 
 **Setup** — on the login node, once:
@@ -13,19 +14,23 @@ git clone https://github.com/imedea-datalab/tramuntana-workshop.git
 cd tramuntana-workshop/exercises
 ```
 
-| # | Exercise | Time |
-|---|---|---|
-| 0 | [Everyone in, through the browser](#exercise-0--everyone-in-through-the-browser) | 10 min |
-| 1 | [Your first GPU job, asked for correctly](#exercise-1--your-first-gpu-job-asked-for-correctly) | 15 min |
-| 2 | [Break it on purpose](#exercise-2--break-it-on-purpose) | 18 min |
-| 3 | [Look at a GPU without disturbing it](#exercise-3--look-at-a-gpu-without-disturbing-it) | 12 min |
-| 4 | [Let the profiler size the job for you](#exercise-4--let-the-profiler-size-the-job-for-you) | 20 min |
-| 5 | [What happens if you edit on the login node](#exercise-5--what-happens-if-you-edit-on-the-login-node) | 8 min |
-| 6 | [Where your files live, and what is protected](#exercise-6--where-your-files-live-and-what-is-protected) | 7 min |
+| # | After the section on… | Exercise | Time |
+|---|---|---|---|
+| 1 | [Open OnDemand](01-whats-new.md#5-open-ondemand) | [Everyone in, through the browser](#exercise-1--everyone-in-through-the-browser) | 10 min |
+| 2 | [The login node](01-whats-new.md#6-the-login-node-is-not-your-laptop) | [What happens if you edit on the login node](#exercise-2--what-happens-if-you-edit-on-the-login-node) | 8 min |
+| 3 | [Interactive jobs](01-whats-new.md#7-interactive-jobs-from-the-terminal) | [Get a shell on a compute node](#exercise-3--get-a-shell-on-a-compute-node) | 7 min |
+| 4 | [GPUs are shared](01-whats-new.md#8-gpus-are-shared-now) | [Your first GPU job, asked for correctly](#exercise-4--your-first-gpu-job-asked-for-correctly) | 15 min |
+| 5 | ” | [Break it on purpose](#exercise-5--break-it-on-purpose) | 18 min |
+| 6 | ” | [Look at a GPU without disturbing it](#exercise-6--look-at-a-gpu-without-disturbing-it) | 10 min |
+| 7 | [The profiler](01-whats-new.md#9-stop-guessing-your-resources) | [Let the profiler size the job for you](#exercise-7--let-the-profiler-size-the-job-for-you) | 20 min |
+| 8 | [Storage and backups](01-whats-new.md#10-storage-and-backups) | [Where your files live, and what is protected](#exercise-8--where-your-files-live-and-what-is-protected) | 7 min |
+| 9 | [Docs and chatbot](01-whats-new.md#11-documentation-chatbot-and-monitoring) | [Ask the chatbot](#exercise-9--ask-the-chatbot) | 5 min |
 
 ---
 
-## Exercise 0 — Everyone in, through the browser
+## Exercise 1 — Everyone in, through the browser
+
+**Goes with:** [§5 Open OnDemand](01-whats-new.md#5-open-ondemand)
 
 **Goal:** every person in the room running code on a compute node, within ten minutes, without
 touching a terminal.
@@ -53,7 +58,71 @@ here could have been done this way.
 
 ---
 
-## Exercise 1 — Your first GPU job, asked for correctly
+## Exercise 2 — What happens if you edit on the login node
+
+**Goes with:** [§6 The login node is not your laptop](01-whats-new.md#6-the-login-node-is-not-your-laptop)
+
+**Goal:** see the policy in action, so it isn't a surprise later.
+
+**We run this one together as a demo** — fifteen simultaneous attempts is not a good idea.
+
+1. From your laptop, connect VS Code Remote-SSH directly to `tramuntana`.
+2. Wait about thirty seconds.
+3. The connection drops.
+
+On the cluster side, the kill is logged:
+
+```bash
+grep IDE_KILLER /var/log/syslog
+```
+
+Then, immediately, the right way: back to Open OnDemand from exercise 1, same editor, same files,
+running on `vscode-node01` where it belongs.
+
+Same work. One version takes the login node down for everyone; the other doesn't.
+
+---
+
+## Exercise 3 — Get a shell on a compute node
+
+**Goes with:** [§7 Interactive jobs from the terminal](01-whats-new.md#7-interactive-jobs-from-the-terminal)
+
+**Goal:** do by hand what Open OnDemand did for you in exercise 1, so you know what it is doing.
+
+From the login node:
+
+```bash
+hostname                 # tramuntana -- you are on the login node
+
+srun --partition=express --cpus-per-task=2 --mem=4G --time=00:15:00 --pty bash
+
+hostname                 # a compute node -- ada, pampero, thor...
+nproc                    # 2, not the node's real core count
+```
+
+You are inside an allocation. `nproc` reports what SLURM gave you, not what the machine has —
+that is the cgroup doing its job.
+
+Leave it with `exit`, and confirm the allocation is gone:
+
+```bash
+exit
+squeue -u $USER          # empty
+```
+
+Now try the same thing without allocating anything:
+
+```bash
+ssh ada
+```
+
+It refuses. That is the rule from the slides, enforced: no allocation, no compute node.
+
+---
+
+## Exercise 4 — Your first GPU job, asked for correctly
+
+**Goes with:** [§8 GPUs are shared now](01-whats-new.md#8-gpus-are-shared-now)
 
 **Goal:** submit a GPU job the 2.0 way, and prove the allocation reached your code.
 
@@ -63,10 +132,10 @@ First, look at what's free:
 check_gpu
 ```
 
-Then submit [`01-first-gpu-job.slurm`](exercises/01-first-gpu-job.slurm):
+Then submit [`04-first-gpu-job.slurm`](exercises/04-first-gpu-job.slurm):
 
 ```bash
-sbatch 01-first-gpu-job.slurm
+sbatch 04-first-gpu-job.slurm
 squeue -u $USER
 ```
 
@@ -83,21 +152,23 @@ cat first-gpu-*.out
   **other people's processes on it**. That is the point: the GPU is shared.
 
 **Question to sit with:** `nvidia-smi` reports the whole card. So what is actually stopping you from
-using all of it? (Exercise 2.)
+using all of it? (Exercise 5.)
 
 ---
 
-## Exercise 2 — Break it on purpose
+## Exercise 5 — Break it on purpose
+
+**Goes with:** [§8 GPUs are shared now](01-whats-new.md#8-gpus-are-shared-now)
 
 **Goal:** experience both failure modes, deliberately, in a safe place.
 
-### 2a. Exceed your request
+### 5a. Exceed your request
 
-[`02-oom-watchdog.slurm`](exercises/02-oom-watchdog.slurm) asks for **4 GB** and then tries to
+[`05a-oom-watchdog.slurm`](exercises/05a-oom-watchdog.slurm) asks for **4 GB** and then tries to
 allocate **10 GB**:
 
 ```bash
-sbatch 02-oom-watchdog.slurm
+sbatch 05a-oom-watchdog.slurm
 squeue -u $USER          # watch it
 ```
 
@@ -116,13 +187,13 @@ request, job completes.
 > This is the single most useful thing to have experienced before it happens to you at 2 a.m. on
 > real work.
 
-### 2b. The legacy trap
+### 5b. The legacy trap
 
-[`03-legacy-syntax.slurm`](exercises/03-legacy-syntax.slurm) uses the **old** `--gres=gpu:1` syntax.
-Submit it and, while it runs, inspect what SLURM actually gave you:
+[`05b-legacy-syntax.slurm`](exercises/05b-legacy-syntax.slurm) uses the **old** `--gres=gpu:1`
+syntax. Submit it and, while it runs, inspect what SLURM actually gave you:
 
 ```bash
-sbatch 03-legacy-syntax.slurm
+sbatch 05b-legacy-syntax.slurm
 scontrol show job <jobid> | grep -i tres
 ```
 
@@ -137,11 +208,13 @@ good start.
 
 ---
 
-## Exercise 3 — Look at a GPU without disturbing it
+## Exercise 6 — Look at a GPU without disturbing it
+
+**Goes with:** [§8 GPUs are shared now](01-whats-new.md#8-gpus-are-shared-now)
 
 **Goal:** two habits worth keeping.
 
-**Inside a job you already have running** (start one from exercise 1 first, with a longer
+**Inside a job you already have running** (start one from exercise 4 first, with a longer
 `--time`):
 
 ```bash
@@ -163,16 +236,18 @@ completely full, and queueing a large job right now would just mean waiting.
 
 ---
 
-## Exercise 4 — Let the profiler size the job for you
+## Exercise 7 — Let the profiler size the job for you
+
+**Goes with:** [§9 Stop guessing your resources](01-whats-new.md#9-stop-guessing-your-resources)
 
 **Goal:** stop guessing.
 
-[`04-profile-me.slurm`](exercises/04-profile-me.slurm) runs a CPU workload that scales with the
+[`07-profile-me.slurm`](exercises/07-profile-me.slurm) runs a CPU workload that scales with the
 cores it is given. Note that it deliberately sets **no** `--cpus-per-task`, `--mem` or `--time` —
 those would be ceilings the profiler cannot exceed.
 
 ```bash
-tramuntana-profile -t 30s 04-profile-me.slurm
+tramuntana-profile -t 30s 07-profile-me.slurm
 ```
 
 It will run the job several times, doubling cores while that still buys speed, and recovering
@@ -181,7 +256,7 @@ automatically if it runs out of memory. At the end it prints a recommended `#SBA
 Now compare against a badly-sized version. Submit the same work asking for far too much:
 
 ```bash
-sbatch --cpus-per-task=64 --mem=200G 04-profile-me.slurm
+sbatch --cpus-per-task=64 --mem=200G 07-profile-me.slurm
 ```
 
 then check what it really used:
@@ -195,30 +270,9 @@ waiting in the queue for resources it never touched.
 
 ---
 
-## Exercise 5 — What happens if you edit on the login node
+## Exercise 8 — Where your files live, and what is protected
 
-**Goal:** see the policy in action, so it isn't a surprise later.
-
-**We run this one together as a demo** — fifteen simultaneous attempts is not a good idea.
-
-1. From your laptop, connect VS Code Remote-SSH directly to `tramuntana`.
-2. Wait about thirty seconds.
-3. The connection drops.
-
-On the cluster side, the kill is logged:
-
-```bash
-grep IDE_KILLER /var/log/syslog
-```
-
-Then, immediately, the right way: back to Open OnDemand from exercise 0, same editor, same files,
-running on `vscode-node01` where it belongs.
-
-Same work. One version takes the login node down for everyone; the other doesn't.
-
----
-
-## Exercise 6 — Where your files live, and what is protected
+**Goes with:** [§10 Storage and backups](01-whats-new.md#10-storage-and-backups)
 
 **Goal:** know what would survive a mistake.
 
@@ -240,10 +294,41 @@ servicio_datalab@imedea.uib-csic.es with the path and roughly when the file was 
 
 ---
 
+## Exercise 9 — Ask the chatbot
+
+**Goes with:** [§11 Documentation, chatbot and monitoring](01-whats-new.md#11-documentation-chatbot-and-monitoring)
+
+**Goal:** know when the chatbot is the fastest way to an answer, and when it isn't.
+
+In Open OnDemand: **Interactive Apps → AI Chatbot (RAG)** → **Launch** → **Connect**.
+
+> The first question after an idle period takes **3–4 minutes** while the models load. Start it
+> going, then come back to it.
+
+Ask it something you now know the answer to, so you can judge the quality:
+
+```
+How do I request GPU memory instead of a whole GPU?
+```
+
+Then ask something you don't:
+
+```
+How do I run a job array?
+```
+
+**What to look at:** the citations under the answer. Those are the documentation sections it read.
+Open one. The citation is usually more valuable than the answer — it tells you where the real
+reference lives.
+
+**What not to do:** follow-up questions. It has no conversation memory, so "and what about R?"
+will be answered as if you had asked nothing before. Repeat the full context each time.
+
+---
+
 ## Where to go next
 
 - **Documentation:** <https://imedea-datalab.github.io/tramuntana-docs/>
-- **These slides:** [Canva](https://www.canva.com/d/oG4tBEbgxVxoptp)
 - **The written version:** [Part 1 — What's new](01-whats-new.md)
 - **Questions:** servicio_datalab@imedea.uib-csic.es
 
